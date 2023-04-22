@@ -1,6 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 /* REGISTER USER */
 export const register = async (req, res) => {
@@ -16,14 +19,16 @@ export const register = async (req, res) => {
       occupation,
     } = req.body;
 
-    const salt = await bcrypt.genSalt();
-    const passwordHash = await bcrypt.hash(password, salt);
+    // const salt = await bcrypt.genSalt();
+    // const passwordHash = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const secPass = await bcrypt.hash(req.body.password,salt);
 
     const newUser = new User({
       firstName,
       lastName,
       email,
-      password: passwordHash,
+      password: secPass,
       picturePath,
       friends,
       location,
@@ -31,11 +36,23 @@ export const register = async (req, res) => {
       viewedProfile: Math.floor(Math.random() * 10000),
       impressions: Math.floor(Math.random() * 10000),
     });
+    // const data={
+    //   user:{
+    //     id:user.id
+    //   }
+    // }
+
+    // const authToken=jwt.sign(data,process.env.JWT_SECRET);
+    // success=true;
+    // res.json({Success:success,authToken});
+
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+
+  }  catch(error){
+      console.error(error.message);
+      res.status(500).json().send({Success:success,error: "some internal server error occured"})
+    }
 };
 
 /* LOGGING IN */
