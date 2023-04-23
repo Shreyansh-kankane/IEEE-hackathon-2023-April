@@ -1,7 +1,7 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import Friend from "components/Friend";
 import WidgetWrapper from "components/WidgetWrapper";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFriends } from "state";
 
@@ -10,6 +10,7 @@ const FriendListWidget = ({ userId }) => {
   const { palette } = useTheme();
   const token = useSelector((state) => state.token);
   const friends = useSelector((state) => state.user.friends);
+  const [load,setLoad] = useState(true);
 
   const getFriends = async () => {
     const response = await fetch(
@@ -21,10 +22,15 @@ const FriendListWidget = ({ userId }) => {
     );
     const data = await response.json();
     dispatch(setFriends({ friends: data }));
+    return data;
   };
 
   useEffect(() => {
-    getFriends();
+    let d = getFriends();
+    console.log(d);
+    console.log("nacho");
+    setLoad(false);
+
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
@@ -38,7 +44,8 @@ const FriendListWidget = ({ userId }) => {
         Friend List
       </Typography>
       <Box display="flex" flexDirection="column" gap="1.5rem">
-        {friends.map((friend) => (
+
+        {/* { load===false ? (friends.length!==0 && friends.map((friend) => (
           <Friend
             key={friend._id}
             friendId={friend._id}
@@ -46,7 +53,13 @@ const FriendListWidget = ({ userId }) => {
             subtitle={friend.occupation}
             userPicturePath={friend.picturePath}
           />
-        ))}
+        ))) : (
+
+          <h1>Loading...</h1>
+          
+        )
+      } */}
+
       </Box>
     </WidgetWrapper>
   );
