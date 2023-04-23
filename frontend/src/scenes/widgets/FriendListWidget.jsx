@@ -45,7 +45,7 @@ const FriendListWidget = ({ userId }) => {
       </Typography>
       <Box display="flex" flexDirection="column" gap="1.5rem">
 
-        {/* { load===false ? (friends.length!==0 && friends.map((friend) => (
+        { load===false ? (friends.length!==0 && friends.map((friend) => (
           <Friend
             key={friend._id}
             friendId={friend._id}
@@ -58,7 +58,7 @@ const FriendListWidget = ({ userId }) => {
           <h1>Loading...</h1>
           
         )
-      } */}
+      }
 
       </Box>
     </WidgetWrapper>

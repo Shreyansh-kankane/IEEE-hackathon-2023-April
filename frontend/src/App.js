@@ -24,8 +24,8 @@ function App() {
           <CssBaseline />
           <Routes>
           {/* <Route path='/' element={<Layout progress={this.state.progress}/>}/> */}
-            {/* <Route index path="/" element={<LoginPage />} /> */}
-            <Route path="/" element={<Particles />} />
+            <Route index path="/" element={<LoginPage />} />
+            {/* <Route path="/" element={<Particles />} /> */}
             <Route
               path="/home"
               element={isAuth ? <HomePage /> : <Navigate to="/" />}
