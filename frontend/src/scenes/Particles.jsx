@@ -1,24 +1,24 @@
-import Particles from "react-tsparticles";
-import { loadFull } from "tsparticles";
-import Typed from 'react-typed';
-import background from './background.png'
+// import Particles from "react-tsparticles";
+// import { loadFull } from "tsparticles";
+// import Typed from 'react-typed';
+// import background from './background.png'
 
 function Particle() {
-    const particlesInit = (engine) => {
-        console.log(engine);
-        // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
-        // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
-        // starting from v2 you can add only the features you need reducing the bundle size
-        loadFull(engine);
-    };
+    // const particlesInit = (engine) => {
+    //     console.log(engine);
+    //     // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
+    //     // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
+    //     // starting from v2 you can add only the features you need reducing the bundle size
+    //     loadFull(engine);
+    // };
 
-    const particlesLoaded = (container) => {
-        console.log(container);
-    };
+    // const particlesLoaded = (container) => {
+    //     console.log(container);
+    // };
 
     return (
         <>
-       <div style={{
+       {/* <div style={{
             backgroundImage: `url(${background})`,
             backgroundRepeat: 'no-repeat',
             height:'100vh',
@@ -123,7 +123,7 @@ function Particle() {
         </Typed>
         </h1>
          </div>
-         
+          */}
     {/* <Button variant="outlined">Primary</Button> */}
 
     </>

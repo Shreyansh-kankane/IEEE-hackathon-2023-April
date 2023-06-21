@@ -3,54 +3,47 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 import PostWidget from "./PostWidget";
 import { useState } from "react";
+import { BASE_URI } from "helper";
 
-const PostsWidget = ({ userId, isProfile = false }) => {
+const PostsWidget = ({ userId,isProfile = false }) => {
 
   const [load,setLoad] = useState(true);
 
   const dispatch = useDispatch();
-  const posts = useSelector((state) => state.posts);
-  // console.log(posts);
+  const posts = useSelector((state) => state.posts);;
   const token = useSelector((state) => state.token);
 
+  useEffect(() => {
 
-  const getPosts = async () => {
-    const response = await fetch("http://localhost:3001/posts", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await response.json();
-    console.log({data: data});
-    dispatch(setPosts({ posts: data }));
-    return data;
-  };
-
-  const getUserPosts = async () => {
-    const response = await fetch(
-      `http://localhost:3001/posts/${userId}/posts`,
-      {
+    const getPosts = async () => {
+      const response = await fetch(`${BASE_URI}/posts`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    const data = await response.json();
-    // console.log({data: data});
-    dispatch(setPosts({ posts: data }));
-    return data;
-  };
+      });
+      const data = await response.json();
+      dispatch(setPosts({ posts: data }));
+      setLoad(false);
+    };
 
-  useEffect(() => {
+    const getUserPosts = async () => {
+      const response = await fetch(
+        `${BASE_URI}/posts/${userId}/posts`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await response.json();
+      dispatch(setPosts({ posts: data }));
+      setLoad(false);
+    };
+
     if (isProfile) {
-      let d = getUserPosts();
-      console.log(d);
-      setLoad(false);
-      
+      getUserPosts();
     } else {
-      let d = getPosts();
-      // console.log(d);
-      setLoad(false);
+      getPosts();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [token,userId,isProfile,dispatch]);
 
   return (
     <>
@@ -81,10 +74,9 @@ const PostsWidget = ({ userId, isProfile = false }) => {
           />
         )
       )) : (
-        <h1>Loading...</h1>
+        <div>Loading...</div>
       )
     }
-      
     </>
   );
 };

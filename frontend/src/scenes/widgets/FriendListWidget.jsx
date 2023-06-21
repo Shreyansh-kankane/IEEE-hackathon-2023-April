@@ -4,6 +4,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFriends } from "state";
+import { BASE_URI } from "helper";
 
 const FriendListWidget = ({ userId }) => {
   const dispatch = useDispatch();
@@ -12,9 +13,11 @@ const FriendListWidget = ({ userId }) => {
   const friends = useSelector((state) => state.user.friends);
   const [load,setLoad] = useState(true);
 
-  const getFriends = async () => {
+
+  useEffect(() => {
+    const getFriends = async () => {
     const response = await fetch(
-      `http://localhost:3001/users/${userId}/friends`,
+      `${BASE_URI}/users/${userId}/friends`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
@@ -22,16 +25,11 @@ const FriendListWidget = ({ userId }) => {
     );
     const data = await response.json();
     dispatch(setFriends({ friends: data }));
-    return data;
-  };
-
-  useEffect(() => {
-    let d = getFriends();
-    console.log(d);
-    console.log("nacho");
     setLoad(false);
+  };
+  getFriends();
+  },[token,userId,dispatch]);
 
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <WidgetWrapper>
@@ -45,21 +43,21 @@ const FriendListWidget = ({ userId }) => {
       </Typography>
       <Box display="flex" flexDirection="column" gap="1.5rem">
 
-        { load===false ? (friends.length!==0 && friends.map((friend) => (
-          <Friend
-            key={friend._id}
-            friendId={friend._id}
-            name={`${friend.firstName} ${friend.lastName}`}
-            subtitle={friend.occupation}
-            userPicturePath={friend.picturePath}
-          />
-        ))) : (
-
-          <h1>Loading...</h1>
-          
+        { load===false ? 
+        (
+          friends.length!==0 && friends.map((friend) => (
+            <Friend
+              key={friend._id}
+              friendId={friend._id}
+              name={`${friend.firstName} ${friend.lastName}`}
+              subtitle={friend.occupation}
+              userPicturePath={friend.picturePath}
+            />
+          ))
+        ) : (
+          <div>Loading...</div>
         )
       }
-
       </Box>
     </WidgetWrapper>
   );

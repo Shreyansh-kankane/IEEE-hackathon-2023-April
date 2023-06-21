@@ -48,10 +48,12 @@ export const register = async (req, res) => {
 
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
+    return;
 
   }  catch(error){
       console.error(error.message);
-      res.status(500).json().send({Success:success,error: "some internal server error occured"})
+      res.status(500).json({error: "some internal server error occured"});
+      return;
     }
 };
 
