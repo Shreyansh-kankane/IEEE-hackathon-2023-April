@@ -6,8 +6,10 @@ import { setFriends } from "state";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 import { BASE_URI } from "helper";
+import { toast } from "react-hot-toast";
 
-const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
+const Friend = ({ friendId, name, subtitle, userPicturePath,userId,loggedInUserId
+ }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { _id } = useSelector((state) => state.user);
@@ -23,22 +25,22 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
   const isFriend = friends.find((friend) => friend._id === friendId);
 
   const patchFriend = async () => {
-    await fetch(
-      `${BASE_URI}/${_id}/${friendId}`,
+    const res = await fetch(
+      `${BASE_URI}/users/${_id}/${friendId}`,
       {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${token}`},
       }
-    ).then(async (res)=>{
-      const data = await res.json();
-      dispatch(setFriends({ friends: data }));
-    }).catch((err)=>{
-      console.log(err.message);
-    })
-    
+    )
+    const data = await res.json();
+    console.log(data);
+    if(isFriend){
+      toast.success("friend removed");
+    }
+    else{
+      toast.success("friend added");
+    }
+    dispatch(setFriends({ friends: data }));    
   };
 
   return (
@@ -69,7 +71,9 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
           </Typography>
         </Box>
       </FlexBetween>
-      <IconButton
+      {
+        (userId === loggedInUserId) &&
+       (<IconButton
         onClick={() => patchFriend()}
         sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
       >
@@ -78,7 +82,8 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
         ) : (
           <PersonAddOutlined sx={{ color: primaryDark }} />
         )}
-      </IconButton>
+      </IconButton>)
+      }
     </FlexBetween>
   );
 };

@@ -6,21 +6,24 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 /* REGISTER USER */
-export const register = async (req, res) => {
+export const register = async (req, res, picturePath) => {
   try {
+
     const {
       firstName,
       lastName,
       email,
       password,
-      picturePath,
       friends,
       location,
       occupation,
     } = req.body;
 
-    // const salt = await bcrypt.genSalt();
-    // const passwordHash = await bcrypt.hash(password, salt);
+    const user = await User.findOne({ email: email });
+    if(user){
+      res.status(409).json({err:"user already exist"});
+      return;
+    }
     const salt = await bcrypt.genSalt(10);
     const secPass = await bcrypt.hash(req.body.password,salt);
 
@@ -36,18 +39,10 @@ export const register = async (req, res) => {
       viewedProfile: Math.floor(Math.random() * 10000),
       impressions: Math.floor(Math.random() * 10000),
     });
-    // const data={
-    //   user:{
-    //     id:user.id
-    //   }
-    // }
-
-    // const authToken=jwt.sign(data,process.env.JWT_SECRET);
-    // success=true;
-    // res.json({Success:success,authToken});
 
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
+    // console.log(savedUser);
     return;
 
   }  catch(error){

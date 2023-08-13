@@ -3,6 +3,7 @@ import {
   FavoriteBorderOutlined,
   FavoriteOutlined,
   ShareOutlined,
+  DeleteOutlined,
 } from "@mui/icons-material";
 import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import FlexBetween from "components/FlexBetween";
@@ -12,6 +13,8 @@ import { BASE_URI } from "helper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "state";
+import { toast } from "react-hot-toast";
+import { setPosts } from "state";
 
 const PostWidget = ({
   postId,
@@ -28,12 +31,23 @@ const PostWidget = ({
   const dispatch = useDispatch();
   const token = useSelector((state) => state.token);
   const loggedInUserId = useSelector((state) => state.user._id);
+  // const loginUserName = useSelector((state) => state.user.firstName);
   const isLiked = Boolean(likes[loggedInUserId]);
   const likeCount = Object.keys(likes).length;
 
   const { palette } = useTheme();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
+
+  
+  const getPosts = async () => {
+    const response = await fetch(`${BASE_URI}/posts`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await response.json();
+    dispatch(setPosts({ posts: data }));
+  };
 
   const patchLike = async () => {
     const response = await fetch(`${BASE_URI}/posts/${postId}/like`, {
@@ -42,11 +56,34 @@ const PostWidget = ({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userId: loggedInUserId }),
+      body: JSON.stringify({ userId: postUserId }),
     });
     const updatedPost = await response.json();
+    console.log(updatedPost);
     dispatch(setPost({ post: updatedPost }));
   };
+
+  const deletePost = async ()=>{
+    toast.loading("loading...")
+    const response = await fetch(`${BASE_URI}/posts/${postId}/delete`,{
+      method: "DELETE",
+      headers:{
+         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: loggedInUserId })
+    });
+    if(response.status===200){
+      toast.dismiss();
+      toast.success("succesfullly deleted");
+      getPosts();
+    }
+    else{
+      toast.dismiss();
+      toast.error("cannot delete !");
+    }
+    //const deletedPost = await response.json();
+  }
 
   return (
     <WidgetWrapper m="2rem 0">
@@ -65,7 +102,8 @@ const PostWidget = ({
           height="auto"
           alt="post"
           style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-          src={`${BASE_URI}/assets/${picturePath}`}
+          // src={`${BASE_URI}/assets/${picturePath}`}
+           src={`${picturePath}`}
         />
       )}
       <FlexBetween mt="0.25rem">
@@ -87,22 +125,35 @@ const PostWidget = ({
             </IconButton>
             <Typography>{comments.length}</Typography>
           </FlexBetween>
+
+          {
+            (loggedInUserId===postUserId || loggedInUserId==='649f11133d4c009324b7ee51') && (
+              <FlexBetween gap="0.3rem">
+              <IconButton onClick={()=>deletePost()}>
+                  <DeleteOutlined/>
+              </IconButton>
+            </FlexBetween>
+            )
+          }    
+          
         </FlexBetween>
 
         <IconButton>
           <ShareOutlined />
         </IconButton>
+
       </FlexBetween>
+
       {isComments && (
         <Box mt="0.5rem">
-          {comments.map((comment, i) => (
-            <Box key={`${name}-${i}`}>
-              <Divider />
-              <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
-                {comment}
-              </Typography>
-            </Box>
-          ))}
+            {comments.map((comment, i) => (
+              <Box key={`${name}-${i}`}>
+                <Divider />
+                <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
+                  {comment}
+                </Typography>
+              </Box>
+            ))}
           <Divider />
         </Box>
       )}

@@ -7,10 +7,11 @@ import { useSelector } from "react-redux";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
-import Alumni from "scenes/Alumni";
+// import Alumni from "scenes/Alumni";
 import Organisation from "scenes/Organisation";
+import Peoples from "scenes/widgets/Peoples";
 // import Layout from "components/Layout";
-import Particles from "scenes/Particles";
+// import DirectChatPage from "scenes/widgets/DirectChat";
 
 function App() {
   const mode = useSelector((state) => state.mode);
@@ -25,7 +26,6 @@ function App() {
           <Routes>
           {/* <Route path='/' element={<Layout progress={this.state.progress}/>}/> */}
             <Route index path="/" element={<LoginPage />} />
-            {/* <Route path="/" element={<Particles />} /> */}
             <Route
               path="/home"
               element={isAuth ? <HomePage /> : <Navigate to="/" />}
@@ -35,12 +35,12 @@ function App() {
               element={isAuth ? <ProfilePage /> : <Navigate to="/" />}
             />
             <Route
-              path="/alumni/"
-              element={isAuth ? <Alumni /> : <Navigate to="/" />}
+              path="/users"
+              element={isAuth ? <Peoples /> : <Navigate to="/" />}
             />
             <Route
-              path="/organisation/"
-              element={isAuth ? <Organisation /> : <Navigate to="/" />}
+              path="/organisation"
+              element={isAuth ? <Organisation/> : <Navigate to="/" />}
             />
           </Routes>
         </ThemeProvider>
